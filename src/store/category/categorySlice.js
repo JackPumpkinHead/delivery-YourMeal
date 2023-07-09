@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { API_URI, POSTFIX} from "../../const.js";
+import { API_URI, POSTFIX } from "../../const.js";
 
 const initialState = {
     category: [],
@@ -8,7 +8,7 @@ const initialState = {
 };
 
 export const categoryAsyncRequest = createAsyncThunk('category/fetch', () => {
-    fetch(`${API_URI}${POSTFIX}/category`)
+    return fetch(`${API_URI}${POSTFIX}/category`)
         .then(req => req.json())
         .catch(error => ({ error }))
 })
@@ -21,17 +21,18 @@ const categorySlice = createSlice({
             state.activeCategory = action.payload.indexCategory
         }
     },
-    extraReducers: {
-        [categoryAsyncRequest.pending.type]: (state) => {
-            state.error = '';
-        },
-        [categoryAsyncRequest.fulfilled.type]: (state, action) => {
-            state.error = '';
-            state.category = action.payload;
-        },
-        [categoryAsyncRequest.rejected.type]: (state, action) => {
-            state.error = action.payload.error;
-        }
+    extraReducers: builder => {
+        builder
+            .addCase(categoryAsyncRequest.pending, state => {
+                state.error = ''
+            })
+            .addCase(categoryAsyncRequest.fulfilled, (state, action) => {
+                state.error = '';
+                state.category = action.payload;
+            })
+            .addCase(categoryAsyncRequest.rejected, (state, action) => {
+                state.error = action.payload.error;
+            })
     }
 });
 
